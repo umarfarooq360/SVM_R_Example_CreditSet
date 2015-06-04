@@ -1,0 +1,17 @@
+{
+    "contents" : "run =  function(percentTest = 1/3 ) {\n  \n  #import the required libraries\n  library(e1071);\n  library(rpart);\n  \n  #Import the dataset \n  dataSet=read.csv(\"creditset.csv\");\n  \n  #Delete first column, named a in data which just has indices\n  #dataSet = subset(dataSet , select= -c(a) );\n  \n  #Seperate indices for test and training data\n  index = 1:nrow(dataSet);  #The whole dataset index\n  \n  #Sample randomly from the indices to get test and training sets\n  testIndex = sample(index, trunc(length(index)* percentTest ));\n  testSet = dataSet[testIndex ,  ];\n  trainSet = dataSet[ -testIndex , ];\n  \n  #Creating the SVM. default10yr is the name of column with dataSet type\n \n  SVM.Model  = svm(default10yr ~ age + LTI , data =trainSet,scale = TRUE ,cost =1000 ,gamma =1\n                  );\n  \n  #-----------------\n  #Optional : Tune the SVM\n  #   tobj =  tune.svm( default10yr ~ LTI + age , data = trainSet\n  #   ,gamma = 10^(-4:-1) ,cost =10^(1:2) )\n  #----------------\n  \n  #Try printing and plotting the model \n  print(summary(SVM.Model));\n  plot(SVM.Model , trainSet  , LTI~age );\n  \n  #Using the SVM to predict.We are taking away the results in the test set\n  Answers =  subset(testSet , select= c(default10yr));\n  testSet = subset(testSet ,  select= c(age,LTI)); #creating subset of testset\n  SVM.Pred = predict(SVM.Model ,testSet );\n  \n  \n  finalOut =  data.frame(Actual = Answers$default10yr,\n                         Prediction = round(as.data.frame(SVM.Pred)$SVM.Pred  , 2) );\n  \n  print(judgeCloseness(finalOut$Actual , finalOut$Prediction,  0.25 ));\n  \n  \n  return (list(out= finalOut,SVM = SVM.Model) );\n}\n\njudgeCloseness =  function(arr1 = NULL ,arr2 = NULL, threshold = 0.5){\n  count = 0;\n  for (i in 1:length(arr1)){\n    if(abs(arr1[i] - arr2[i])< threshold ){\n      count = count+1;      \n    }\n    \n  }\n  return (count/length(arr1));\n}",
+    "created" : 1400266435616.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2907678563",
+    "id" : "D4D1510F",
+    "lastKnownWriteTime" : 1400269536,
+    "path" : "C:/Users/OmarFarooq/Desktop/Summer2014/ML_R/SVMs/Test_SVM2_CreditSet/run.R",
+    "project_path" : "run.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : true,
+    "type" : "r_source"
+}
